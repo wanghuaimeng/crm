@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+    <settings>
+        <!--指定 MyBatis 所用日志的具体实现，未指定时将自动查找。-->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+
+
+    <!--
+    以包为单位，将包下所有的映射文件引入核心配置文件
+    注意：
+        1. 此方式必须保证mapper接口和mapper映射文件必须在相同的包下
+        2. mapper接口要和mapper映射文件的名字一致
+    -->
+    <mappers>
+        <package name="com.whm.crm.settings.mapper"/>
+    </mappers>
+</configuration>

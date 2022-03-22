@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+
+    <!--引入jdbc。properties-->
+    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+
+
+    <!-- 配置数据源    没有使用druid   不知道为啥-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="url" value="${jdbc.url}"/>
+    </bean>
+
+
+
+    <!--
+        配置SqlSessionFactory
+            SqlSessionFactoryBean来替代SqlSessionFactoryBuilder来创建SqlSession
+            利用mybatis映射文件**.xml来配置
+    -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 必须注入属性dataSource -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 如果mybatis没有特殊的配置(比如别名等)，configLocation可以省去 ;否则，不能省略-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!-- mapper注解扫描器配置,扫描@MapperScan注解,自动生成代码对象 -->
+    <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--
+            设置需要扫描的包   不然无法注入mapper
+        -->
+        <property name="basePackage" value="com.whm.crm.settings.mapper"/>
+        <!--
+            指定在 spring 上下文中存在多个 SqlSessionFactory 的情况下使用哪个SqlSessionFactory 。
+            通常只有当您有多个数据源时才需要这样做。
+        -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--此处指定的 DataSource 应该是管理事务的目标 DataSource-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 配置事务 -->
+    <aop:config>
+        <!-- 配置切入点 -->
+        <!-- execution()语法:execution (* com.xx.xx.impl..*.*(..))
+        首先明白这个表达式是用来匹配方法的,各种条件是为了筛选整个项目的方法。
+        (类的访问修饰符
+        第一个*表示方法返回值类型[*表示所有类型]
+        com.xx.xx.impl表示包路径[*表示所有包]
+        .[.表示当前包下所有类的方法,..表示当前包下及此包下所有子包中的所有类的方法]
+        第二个*表示类名[*表示所有类,可以匹配以X开头或结尾如X*、*X、X*X的类名]
+        第三个*表示方法名[*表示所有方法,可以匹配以X开头或结尾的如X*、*X、X*X的方法名]
+        (..)表示方法参数[..表示任何参数]
+        )-->
+        <aop:pointcut expression="execution(* com.whm.crm..service.*.*(..))" id="allMethodPointcut"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="allMethodPointcut"/>
+    </aop:config>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="edit*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="do*" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="*" propagation="REQUIRED" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+</beans>
