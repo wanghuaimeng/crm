@@ -16,8 +16,6 @@
     <%--
     这和自己在地址栏输入地址访问一样
     因此使用该方法直接访问web-inf下的页面会报错
-
-    href地址不用使用"/"  也会拼接上项目根路径
     --%>
     window.location.href = "pages/settings/qx/user/toLogin.do";
 </script>

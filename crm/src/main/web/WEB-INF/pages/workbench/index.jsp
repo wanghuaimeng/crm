@@ -42,7 +42,7 @@
                 window.location.href='pages/settings/qx/user/logout.do';
             })
 
-            window.open("main/index.html", "workareaFrame");
+            window.open("pages/workbench/main/index.do", "workareaFrame");
 
         });
 
@@ -177,7 +177,7 @@
     <div id="navigation" style="left: 0px; width: 18%; position: relative; height: 100%; overflow:auto;">
 
         <ul id="no1" class="nav nav-pills nav-stacked">
-            <li class="liClass"><a href="main/index.html" target="workareaFrame"><span
+            <li class="liClass"><a href="pages/workbench/main/index.do" target="workareaFrame"><span
                     class="glyphicon glyphicon-home"></span> 工作台</a></li>
             <li class="liClass"><a href="javascript:void(0);" target="workareaFrame"><span
                     class="glyphicon glyphicon-tag"></span> 动态</a></li>
